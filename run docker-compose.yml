@@ -1,0 +1,38 @@
+---
+- name: Deploy application with Docker Compose
+  hosts: your_target_host_group # Replace with your target host or group name
+  become: yes # Use this if you need root privileges for certain tasks
+
+  vars:
+    app_source_path: "./my_app_package.tar.gz" # Path to the file on your local machine
+    app_dest_path: "/opt/myapp/"              # Path where the file will be copied on the remote server
+
+  tasks:
+    - name: Ensure destination directory exists
+      ansible.builtin.file:
+        path: "{{ app_dest_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy the application package to the remote server
+      ansible.builtin.copy:
+        src: "{{ app_source_path }}"
+        dest: "{{ app_dest_path }}"
+        mode: '0644'
+
+    - name: Unarchive the application package
+      ansible.builtin.unarchive:
+        src: "{{ app_dest_path }}/{{ app_source_path | basename }}"
+        dest: "{{ app_dest_path }}"
+        remote_src: yes # This is crucial, tells Ansible the source is on the remote machine
+
+    - name: Run docker-compose up
+      ansible.builtin.shell:
+        cmd: docker compose up -d
+      args:
+        chdir: "{{ app_dest_path }}" # This is where your docker-compose.yml file is located
+      register: docker_compose_output
+
+    - name: Display docker-compose output
+      ansible.builtin.debug:
+        var: docker_compose_output.
