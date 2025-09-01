@@ -1,0 +1,12 @@
+---
+- name: Copy application files to remote server
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Copy application files
+      ansible.builtin.copy:
+        src: ./my_app_files/
+        dest: /var/www/html/
+        owner: www-data
+        group: www-data
+        mode: '0755'
