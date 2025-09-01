@@ -1,0 +1,7 @@
+my-docker-app/
+├── inventory.ini
+├── playbook.yml
+└── real-world-app/
+    ├── Dockerfile
+    ├── index.html  # Or your application file
+    └── ...
